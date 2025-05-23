@@ -1,7 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   const data = JSON.parse(localStorage.getItem("surveyData")) || {};
   const result = JSON.parse(localStorage.getItem("resultData")) || {};
-console.log(" Loaded result from localStorage:", result);
+  console.log("Loaded result from localStorage:", result);
+
+  if (!result.severity && result.severity !== 0) {
+    document.getElementById("severityDisplay").textContent = "No prediction data available";
+    document.getElementById("severityMarker").style.display = "none";
+    document.getElementById("severityBar").style.background = "#666";
+    return;
+  }
 
   const severityIndex = parseInt(result.severity); 
   const confidence = parseFloat(result.score);
@@ -38,12 +45,13 @@ console.log(" Loaded result from localStorage:", result);
 
   // Recommendations
   const recommendationsList = document.getElementById("recommendationsList");
-  recommendationsList.innerHTML = "";
-  const tips = ["Maintain a balanced diet", "Exercise regularly", "Get regular checkups"];
-  tips.forEach(tip => {
-    const div = document.createElement("div");
-    div.className = "recommendation-item";
-    div.textContent = tip;
-    recommendationsList.appendChild(div);
-  });
+  recommendationsList.innerHTML = `
+    <div class="recommendation-item">Maintain a balanced diet</div>
+    <div class="recommendation-item">Exercise regularly</div>
+    <div class="recommendation-item">Get regular checkups</div>
+  `;
+
+  // Clear the data from localStorage after displaying it
+  localStorage.removeItem("surveyData");
+  localStorage.removeItem("resultData");
 });

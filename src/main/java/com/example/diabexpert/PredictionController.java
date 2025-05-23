@@ -3,6 +3,9 @@ package com.example.diabexpert;
 import com.example.diabexpert.dto.PredictionRequest;
 import com.example.diabexpert.dto.PredictionResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import java.io.IOException;
 
 import java.util.List;
 import java.util.Arrays;
@@ -17,19 +20,19 @@ public class PredictionController {
         try {
             // Prepare input features
             double[] features = new double[]{
-            mapGender(request.getGender()),
-            request.getAge(),
-            mapYesNo(request.getHypertension()),
-            mapYesNo(request.getHeartDisease()),
-            mapSmoking(request.getSmokingHistory()),
-            request.getBmi(),
-            request.getHbA1cLevel(),
-            request.getBloodGlucoseLevel()
-        };
-System.out.println(" Input Features: " + Arrays.toString(features));
+                mapGender(request.getGender()),
+                request.getAge(),
+                mapYesNo(request.getHypertension()),
+                mapYesNo(request.getHeartDisease()),
+                mapSmoking(request.getSmokingHistory()),
+                request.getBmi(),
+                request.getHbA1cLevel(),
+                request.getBloodGlucoseLevel()
+            };
+            System.out.println(" Input Features: " + Arrays.toString(features));
 
             // Load and train custom Decision Tree model
-            List<UserData> trainingData = DatasetParser.parseCSV("src/main/resources/trained-DS.csv");
+            List<UserData> trainingData = DatasetParser.parseCSV("trained-DS.csv");
             DecisionTree tree = new DecisionTree();
             tree.train(trainingData);
 
@@ -38,18 +41,18 @@ System.out.println(" Input Features: " + Arrays.toString(features));
             System.out.println(" Input Features: " + Arrays.toString(features));
             System.out.println(" Predicted Severity (before override): " + label);
 
-// Override prediction if all key metrics are healthy
+            // Override prediction if all key metrics are healthy
             if (request.getBloodGlucoseLevel() < 100 &&
-            request.getBmi() < 25 &&
-            request.getHbA1cLevel() < 5.7 &&
-            mapYesNo(request.getHypertension()) == 0 &&
-            mapYesNo(request.getHeartDisease()) == 0) {
-            label = 0;
-            System.out.println(" Overriding prediction: Low Risk based on healthy metrics.");
-}
+                request.getBmi() < 25 &&
+                request.getHbA1cLevel() < 5.7 &&
+                mapYesNo(request.getHypertension()) == 0 &&
+                mapYesNo(request.getHeartDisease()) == 0) {
+                label = 0;
+                System.out.println(" Overriding prediction: Low Risk based on healthy metrics.");
+            }
 
-System.out.println(" Input Features: " + Arrays.toString(features));
-System.out.println(" Predicted Severity: " + label);
+            System.out.println(" Input Features: " + Arrays.toString(features));
+            System.out.println(" Predicted Severity: " + label);
 
             // No confidence from custom tree — set to placeholder or estimate manually if needed
             double confidence = 1.0; // Placeholder, or implement manual confidence logic

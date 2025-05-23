@@ -31,7 +31,4 @@ document.getElementById("healthForm").addEventListener("submit", async function 
     console.error("Prediction failed:", err);
     alert("Prediction failed: " + err.message);
   }
-  localStorage.removeItem("surveyData");
-localStorage.removeItem("resultData");
-
 });
